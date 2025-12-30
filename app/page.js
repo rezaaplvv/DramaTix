@@ -1,65 +1,128 @@
-import Image from "next/image";
+import Link from 'next/link';
+import Hero from '@/components/Hero';
+import GenreList from '@/components/GenreList';
+import Footer from '@/components/Footer';
 
-export default function Home() {
+async function getData(endpoint) {
+  try {
+    const res = await fetch(`https://restxdb.onrender.com/api/${endpoint}?lang=in`, { cache: 'no-store' });
+    const json = await res.json();
+    return json?.data?.list || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export default async function Home() {
+  const [newReleases, recommendations, popular] = await Promise.all([
+    getData('new/1?pagesize=20'),
+    getData('foryou/1'),
+    getData('rank/1')
+  ]);
+
+  const featuredDrama = recommendations[0] || newReleases[0]; 
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="min-h-screen bg-gray-900 text-white">
+      <Hero drama={featuredDrama} />
+      <GenreList />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        
+        {/* POPULER */}
+        {popular.length > 0 && (
+          <section>
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-red-600 rounded-full"></span>
+              Sedang Hype
+            </h2>
+            <div className="flex overflow-x-auto gap-4 pb-4 custom-scrollbar snap-x">
+              {popular.map((drama) => (
+                <Link 
+                  key={drama.bookId} 
+                  // FIX: Bawa Sinopsis
+                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
+                  className="snap-start shrink-0 w-[160px]"
+                >
+                  <div className="group relative aspect-[2/3] rounded-lg overflow-hidden bg-gray-800 hover:ring-2 hover:ring-red-500 transition">
+                    <img src={drama.cover} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                    <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">TOP</div>
+                  </div>
+                  <h3 className="mt-2 text-sm font-medium text-gray-300 line-clamp-1 group-hover:text-white">{drama.bookName}</h3>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* REKOMENDASI */}
+        {recommendations.length > 0 && (
+           <section>
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
+              Rekomendasi Spesial
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {recommendations.slice(0, 10).map((drama) => (
+                <Link 
+                  key={drama.bookId} 
+                  // FIX: Bawa Sinopsis
+                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
+                >
+                  <div className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-800 cursor-pointer">
+                    <img src={drama.cover} className="w-full h-full object-cover transition group-hover:opacity-80" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                       <div className="bg-white/20 backdrop-blur-md p-3 rounded-full">
+                          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                       </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* TERBARU */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <span className="w-1 h-6 bg-green-500 rounded-full"></span>
+              Baru Diupdate
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            {newReleases.map((drama) => (
+              <Link 
+                key={drama.bookId} 
+                // FIX: Bawa Sinopsis
+                href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
+              >
+                <div className="group cursor-pointer relative">
+                  <div className="relative overflow-hidden rounded-xl shadow-lg aspect-[2/3] bg-gray-800">
+                    <img 
+                      src={drama.cover} 
+                      className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 text-xs font-bold rounded text-white border border-white/20">
+                      {drama.chapterCount} Eps
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <h3 className="font-semibold text-gray-200 text-sm line-clamp-1 group-hover:text-red-500 transition">
+                      {drama.bookName}
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1">{drama.playCount || 'N/A'} Views</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+      </div>
+      <Footer />
+    </main>
   );
 }
