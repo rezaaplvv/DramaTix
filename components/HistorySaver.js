@@ -1,31 +1,34 @@
 // components/HistorySaver.js
-"use client";
+'use client';
+
 import { useEffect } from 'react';
 
-export default function HistorySaver({ id, title, cover, chapter }) {
+export default function HistorySaver({ drama, chapterIndex }) {
   useEffect(() => {
-    // 1. Ambil data history lama
-    const history = JSON.parse(localStorage.getItem('myWatchHistory') || '[]');
-    
-    // 2. Buat objek data baru
+    if (!drama || !drama.bookId) return;
+
+    // 1. Ambil history lama
+    const history = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+
+    // 2. Buat data baru yang mau disimpan
     const newEntry = {
-      id,
-      title: decodeURIComponent(title || ""),
-      cover: decodeURIComponent(cover || ""),
-      chapter: parseInt(chapter),
-      lastWatched: new Date().toISOString() // Simpan waktu nonton
+      bookId: drama.bookId,
+      bookName: drama.bookName || drama.title,
+      cover: drama.cover,
+      chapterIndex: chapterIndex,
+      savedAt: new Date().toISOString(),
     };
 
-    // 3. Hapus data lama film ini (biar gak duplikat)
-    const filteredHistory = history.filter(item => item.id !== id);
-    
-    // 4. Masukkan data terbaru ke paling atas
-    filteredHistory.unshift(newEntry);
-    
-    // 5. Simpan balik ke LocalStorage
-    localStorage.setItem('myWatchHistory', JSON.stringify(filteredHistory));
-    
-  }, [id, chapter, title, cover]);
+    // 3. Hapus data lama kalau film ini sudah pernah ditonton (biar gak duplikat)
+    const filteredHistory = history.filter(item => item.bookId !== drama.bookId);
 
-  return null; // Komponen ini tidak menampilkan apa-apa (invisible)
+    // 4. Masukkan data baru ke paling depan (urutan 0)
+    const newHistory = [newEntry, ...filteredHistory];
+
+    // 5. Simpan balik ke LocalStorage
+    localStorage.setItem('watchHistory', JSON.stringify(newHistory));
+    
+  }, [drama, chapterIndex]);
+
+  return null; // Komponen ini invisible (tidak tampil di layar)
 }
