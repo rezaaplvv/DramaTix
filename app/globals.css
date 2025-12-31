@@ -1,9 +1,6 @@
-html {
-  scroll-behavior: smooth; /* <--- INI KUNCINYA */
-}
-
 @import "tailwindcss";
 
+/* --- 1. SETUP VARIABLE WARNA (DEFAULT) --- */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -23,10 +20,9 @@ html {
   }
 }
 
-/* app/globals.css */
-
+/* --- 2. GLOBAL STYLES --- */
 html {
-  scroll-behavior: smooth; /* <--- INI KUNCINYA */
+  scroll-behavior: smooth; /* Efek scroll halus */
 }
 
 body {
@@ -35,18 +31,33 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Sembunyikan scrollbar tapi tetap bisa discroll */
-.custom-scrollbar::-webkit-scrollbar {
-  height: 8px;
+/* --- 3. FITUR CUSTOM SCROLLBAR & SELECTION (BARU) --- */
+
+/* Scrollbar Global (Berlaku untuk seluruh halaman & elemen scroll) */
+::-webkit-scrollbar {
+  width: 8px;  /* Lebar scrollbar vertikal (kanan layar) */
+  height: 8px; /* Tinggi scrollbar horizontal (list film) */
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #1f2937; 
-  border-radius: 4px;
+
+/* Warna Jalur Belakang (Track) - Hitam Gelap */
+::-webkit-scrollbar-track {
+  background: #0f0f10; 
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #4b5563; 
-  border-radius: 4px;
+
+/* Warna Batang Scroll (Thumb) - Merah DramaTix */
+::-webkit-scrollbar-thumb {
+  background: #dc2626; /* Red-600 */
+  border-radius: 10px; /* Membulat biar modern */
+  border: 2px solid #0f0f10; /* Memberi jarak/border hitam */
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #6b7280; 
+
+/* Saat Scrollbar Disentuh Mouse (Hover) */
+::-webkit-scrollbar-thumb:hover {
+  background: #b91c1c; /* Red-700 (Lebih gelap dikit) */
+}
+
+/* Text Selection (Warna saat nge-blok teks) */
+::selection {
+  background-color: #dc2626; /* Background Merah */
+  color: #ffffff; /* Teks Putih */
 }
