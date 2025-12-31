@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 // 1. Import komponen Navbar
 import Navbar from "@/components/Navbar";
+import DynamicTitle from '@/components/DynamicTitle';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,14 +22,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900`}
-      >
-        {/* 2. Pasang Navbar di sini (sebelum children) */}
+    <html lang="id">
+      <body>
+        <DynamicTitle /> {/* 👈 2. PASANG DI SINI (Paling Atas) */}
         <Navbar />
-        
-        {/* Ini adalah konten halaman (Home, Detail, dll) */}
         {children}
       </body>
     </html>
