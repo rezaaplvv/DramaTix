@@ -176,14 +176,18 @@ export default function Navbar() {
             {/* PROFILE AVATAR */}
             <div className="relative group cursor-pointer z-50">
               <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-red-600 flex items-center justify-center text-white font-bold shadow-lg overflow-hidden border border-white/20 hover:scale-105 transition">
-                <span>R</span> 
+                <img 
+      src="/ppp.gif" // Ubah nama file sesuai gambar di folder public kamu
+      alt="Profile"
+      className="w-full h-full object-cover"
+    />
               </div>
               <div className="absolute right-0 mt-2 w-48 bg-black/90 backdrop-blur-md rounded-md shadow-xl py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 invisible group-hover:visible border border-gray-800">
                 <div className="px-4 py-2 border-b border-gray-800">
-                  <p className="text-sm text-white font-bold">Halo, Reza!</p>
+                  <p className="text-sm text-white font-bold">Halo!</p>
                 </div>
-                <Link href="/mylist" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white">❤️ History Nonton</Link>
-                <Link href="/trending" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white">🔥 Trending</Link>
+                <Link href="/mylist" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"> History Nonton</Link>
+                <Link href="/trending" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"> Trending</Link>
               </div>
             </div>
 

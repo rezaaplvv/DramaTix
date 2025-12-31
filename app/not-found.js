@@ -16,7 +16,7 @@ export default function NotFound() {
 
         {/* Pesan Lucu */}
         <h2 className="text-2xl md:text-4xl font-bold mb-4 animate-bounce">
-          Waduh! Salah Kamar Bos... 🎬
+          Waduh! Salah Kamar Bos...
         </h2>
         
         <p className="text-gray-400 max-w-md mx-auto mb-8 leading-relaxed">
