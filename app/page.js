@@ -1,3 +1,4 @@
+// app/page.js
 import Link from 'next/link';
 import Hero from '@/components/Hero';
 import GenreList from '@/components/GenreList';
@@ -40,7 +41,6 @@ export default async function Home() {
               {popular.map((drama) => (
                 <Link 
                   key={drama.bookId} 
-                  // FIX: Bawa Sinopsis
                   href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
                   className="snap-start shrink-0 w-[160px]"
                 >
@@ -55,26 +55,31 @@ export default async function Home() {
           </section>
         )}
 
-        {/* REKOMENDASI */}
+        {/* REKOMENDASI (TARGET SCROLL) */}
         {recommendations.length > 0 && (
-           <section>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
-              Rekomendasi Spesial
-            </h2>
+           <section 
+             id="rekomendasi" 
+             className="scroll-mt-24" // <--- FIX: Biar pas scroll gak ketutupan navbar
+           >
+            <div className="pt-4 mb-4">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
+                Rekomendasi Spesial
+              </h2>
+            </div>
+            
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {recommendations.slice(0, 10).map((drama) => (
                 <Link 
                   key={drama.bookId} 
-                  // FIX: Bawa Sinopsis
                   href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
                 >
                   <div className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-800 cursor-pointer">
                     <img src={drama.cover} className="w-full h-full object-cover transition group-hover:opacity-80" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                       <div className="bg-white/20 backdrop-blur-md p-3 rounded-full">
+                        <div className="bg-white/20 backdrop-blur-md p-3 rounded-full">
                           <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                       </div>
+                        </div>
                     </div>
                   </div>
                 </Link>
@@ -96,7 +101,6 @@ export default async function Home() {
             {newReleases.map((drama) => (
               <Link 
                 key={drama.bookId} 
-                // FIX: Bawa Sinopsis
                 href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
               >
                 <div className="group cursor-pointer relative">

@@ -1,46 +1,81 @@
 // components/Footer.js
+import Link from 'next/link';
+
 export default function Footer() {
   return (
-    <footer className="bg-black border-t border-gray-800 text-gray-400 py-12 mt-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="bg-black border-t border-gray-800 pt-16 pb-8 mt-auto">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
         
-        {/* Kolom 1: Brand */}
+        {/* KOLOM 1: BRAND */}
         <div className="col-span-1 md:col-span-2">
-          <h2 className="text-2xl font-black text-red-600 mb-4">
-            DRAMA<span className="text-white">TIX</span>
-          </h2>
-          <p className="text-sm leading-relaxed max-w-xs">
-            Platform streaming drama pendek vertikal terbaik dan terlengkap. 
-            Nikmati ribuan episode seru secara gratis dengan kualitas HD.
-          </p>
+           <h2 className="text-3xl font-black text-red-600 mb-6 tracking-tighter">
+             DRAMA<span className="text-white">TIX</span>
+           </h2>
+           <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+             Platform streaming drama pendek vertikal terbaik dan terlengkap. 
+             Nikmati ribuan episode seru secara gratis dengan kualitas HD.
+           </p>
         </div>
 
-        {/* Kolom 2: Link */}
+        {/* KOLOM 2: JELAJAHI */}
         <div>
-          <h3 className="text-white font-bold mb-4">Jelajahi</h3>
-          <ul className="space-y-2 text-sm">
-            <li className="hover:text-red-500 cursor-pointer">Trending</li>
-            <li className="hover:text-red-500 cursor-pointer">Rekomendasi</li>
-            <li className="hover:text-red-500 cursor-pointer">Paling Baru</li>
-            <li className="hover:text-red-500 cursor-pointer">Genre</li>
+          <h3 className="text-white font-bold text-lg mb-6">Jelajahi</h3>
+          <ul className="space-y-4 text-sm text-gray-400">
+            <li>
+              <Link href="/trending" className="hover:text-red-600 transition block w-fit">
+                Trending
+              </Link>
+            </li>
+            <li>
+              {/* UPDATE DISINI: Tambahkan /#rekomendasi */}
+              <Link href="/#rekomendasi" className="hover:text-red-600 transition block w-fit">
+                Rekomendasi
+              </Link>
+            </li>
+            <li>
+              <Link href="/search/new" className="hover:text-red-600 transition block w-fit">
+                Paling Baru
+              </Link>
+            </li>
+            <li>
+              <Link href="/" className="hover:text-red-600 transition block w-fit">
+                Genre
+              </Link>
+            </li>
           </ul>
         </div>
 
-        {/* Kolom 3: Bantuan */}
+        {/* KOLOM 3: BANTUAN */}
         <div>
-          <h3 className="text-white font-bold mb-4">Bantuan</h3>
-          <ul className="space-y-2 text-sm">
-            <li className="hover:text-red-500 cursor-pointer">FAQ</li>
-            <li className="hover:text-red-500 cursor-pointer">Kontak Kami</li>
-            <li className="hover:text-red-500 cursor-pointer">DMCA</li>
-            <li className="hover:text-red-500 cursor-pointer">Privacy Policy</li>
+          <h3 className="text-white font-bold text-lg mb-6">Bantuan</h3>
+          <ul className="space-y-4 text-sm text-gray-400">
+            <li>
+              <Link href="/faq" className="hover:text-red-600 transition block w-fit">
+                FAQ
+              </Link>
+            </li>
+            <li>
+              <a href="mailto:support@dramatix.com" className="hover:text-red-600 transition block w-fit">
+                Kontak Kami
+              </a>
+            </li>
+            <li>
+              <Link href="/dmca" className="hover:text-red-600 transition block w-fit">
+                DMCA
+              </Link>
+            </li>
+            <li>
+              <Link href="/privacy" className="hover:text-red-600 transition block w-fit">
+                Privacy Policy
+              </Link>
+            </li>
           </ul>
         </div>
-        
+
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-gray-900 text-center text-xs">
-        &copy; 2025 DramaTix.
+      <div className="text-center text-gray-600 text-xs border-t border-gray-900 pt-8">
+        &copy; {new Date().getFullYear()} DramaTix. All rights reserved. • Dibuat dengan 🔥 oleh Reza
       </div>
     </footer>
   );

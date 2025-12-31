@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth; /* <--- INI KUNCINYA */
+}
+
 @import "tailwindcss";
 
 :root {
@@ -17,6 +21,12 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+/* app/globals.css */
+
+html {
+  scroll-behavior: smooth; /* <--- INI KUNCINYA */
 }
 
 body {
