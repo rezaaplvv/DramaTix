@@ -81,7 +81,7 @@ export default function Navbar() {
               {/* Dropdown Kecil */}
               <div className="absolute right-0 mt-2 w-48 bg-black/90 backdrop-blur-md rounded-md shadow-xl py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 invisible group-hover:visible border border-gray-800">
                 <div className="px-4 py-2 border-b border-gray-800">
-                  <p className="text-sm text-white font-bold">Halo, Reza!</p>
+                  <p className="text-sm text-white font-bold">Halo!</p>
                   <p className="text-xs text-gray-400">VIP Member</p>
                 </div>
                 <Link href="/mylist" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white">
