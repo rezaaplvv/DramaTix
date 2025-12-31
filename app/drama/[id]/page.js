@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BookmarkBtn from '@/components/BookmarkBtn'; // ✅ IMPORT BUTTON DISINI
+import ShareBtn from '@/components/ShareBtn';
 
 export default async function DramaDetail({ params, searchParams }) {
   // Await params dan searchParams sesuai aturan Next.js terbaru
@@ -68,17 +69,30 @@ export default async function DramaDetail({ params, searchParams }) {
                   </Link>
                 )}
 
-                {/* 2. Tombol Bookmark (My List) - ✅ FITUR BARU */}
-                {/* Kita bungkus div biar tombolnya full width menyesuaikan poster */}
-                <div className="flex justify-center w-full">
-                    <BookmarkBtn 
-                        drama={{
-                            bookId: id,
-                            bookName: dramaInfo.bookName,
-                            cover: dramaInfo.cover,
-                            chapterCount: chapters.length
-                        }} 
-                    />
+{/* 2. Baris Tombol Sekunder (My List & Share) */}
+                {/* KITA GANTI 'FLEX' JADI 'GRID' BIAR BAGI DUA RATA */}
+                <div className="grid grid-cols-2 gap-4 mt-4 w-full">
+                    
+                    {/* Tombol Kiri (Tersimpan) */}
+                    <div className="w-full">
+                        <BookmarkBtn 
+                            drama={{
+                                bookId: id,
+                                bookName: dramaInfo.bookName,
+                                cover: dramaInfo.cover,
+                                chapterCount: chapters.length
+                            }} 
+                        />
+                    </div>
+
+                    {/* Tombol Kanan (Share) */}
+                    <div className="w-full">
+                        <ShareBtn 
+                            title={`Nonton ${dramaInfo.bookName} di DramaTix!`} 
+                            text={`Drama seru nih: ${dramaInfo.bookName}. Nonton yuk!`} 
+                        />
+                    </div>
+
                 </div>
             </div>
           </div>

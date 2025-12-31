@@ -77,7 +77,7 @@ export default async function SearchPage({ params }) {
       ) : (
         // Tampilan Kalau Kosong
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="text-6xl mb-4">😢</div>
+          <div className="text-6xl mb-4"></div>
           <h2 className="text-xl font-bold text-gray-300">
             Tidak ada drama yang ditemukan
           </h2>

@@ -23,7 +23,10 @@ export default function ContinueWatching() {
   if (!mounted || !lastWatched) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-[-2rem] relative z-20 mb-8">
+    // PERBAIKAN DISINI:
+    // -mt-20: Di HP dia naik ke atas (floating di atas cover)
+    // md:mt-0: Di Laptop/Desktop dia turun ke posisi normal (supaya tidak nabrak teks)
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 md:mt-0 relative z-20 mb-8">
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 border border-white/10 rounded-xl p-4 flex items-center gap-4 shadow-xl backdrop-blur-md">
         
         {/* Poster Kecil */}

@@ -27,7 +27,7 @@ export default async function WatchPage({ params, searchParams }) {
   if (!videoData) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white pt-20">
-        <h1 className="text-2xl font-bold">Video Tidak Tersedia 😢</h1>
+        <h1 className="text-2xl font-bold">Video Tidak Tersedia </h1>
         <Link href={`/drama/${id}`} className="mt-4 px-6 py-2 bg-red-600 rounded-full hover:bg-red-700 transition">
           Kembali
         </Link>

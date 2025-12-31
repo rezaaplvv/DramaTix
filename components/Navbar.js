@@ -12,7 +12,7 @@ export default function Navbar() {
   // STATE
   const [keyword, setKeyword] = useState("");
   const [scrolled, setScrolled] = useState(false);
-  const [showMobileSearch, setShowMobileSearch] = useState(false); // <--- STATE BARU UNTUK HP
+  const [showMobileSearch, setShowMobileSearch] = useState(false); 
   
   // STATE AUTOCOMPLETE
   const [suggestions, setSuggestions] = useState([]); 
@@ -42,7 +42,6 @@ export default function Navbar() {
     const delayDebounceFn = setTimeout(async () => {
       setIsSearching(true);
       try {
-        // Fix URL: pakai /1 (page 1)
         const url = `https://restxdb.onrender.com/api/search/${keyword}/1?lang=in`;
         const res = await fetch(url);
         const json = await res.json();
@@ -74,13 +73,14 @@ export default function Navbar() {
     e.preventDefault(); 
     if (keyword.trim()) {
       setShowSuggestions(false); 
-      setShowMobileSearch(false); // Tutup search mobile juga
+      setShowMobileSearch(false); 
       router.push(`/search/${keyword}`);
     }
   };
 
   const getLinkClass = (path) => {
-    const baseClass = "px-3 py-2 rounded-md text-sm font-bold transition duration-300";
+    // Ukuran teks diperkecil di mobile (text-[12px]) agar muat, dan normal di desktop (md:text-sm)
+    const baseClass = "px-2 md:px-3 py-2 rounded-md text-[12px] md:text-sm font-bold transition duration-300 whitespace-nowrap";
     return pathname === path 
       ? `${baseClass} text-white` 
       : `${baseClass} text-gray-300 hover:text-red-500`;
@@ -92,31 +92,29 @@ export default function Navbar() {
       ${scrolled || showMobileSearch ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-black/50 backdrop-blur-md'}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-16 gap-2 md:gap-4">
           
           {/* LOGO */}
           <div className="flex-shrink-0 cursor-pointer min-w-max">
             <Link href="/">
-              <span className="text-2xl font-black text-red-600 tracking-tighter hover:scale-105 transition transform block">
+              <span className="text-xl md:text-2xl font-black text-red-600 tracking-tighter hover:scale-105 transition transform block">
                 DRAMA<span className="text-white">TIX</span>
               </span>
             </Link>
           </div>
 
-          {/* MENU UTAMA (Desktop) */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-6">
-              <Link href="/" className={getLinkClass('/')}>Home</Link>
-              <Link href="/mylist" className={getLinkClass('/mylist')}>My List</Link>
-              <Link href="/trending" className={getLinkClass('/trending')}>Trending</Link>
-            </div>
+          {/* MENU UTAMA (Sekarang Muncul di HP & Desktop) */}
+          <div className="flex items-center space-x-1 md:space-x-6 overflow-x-auto no-scrollbar">
+            <Link href="/" className={getLinkClass('/')}>Home</Link>
+            <Link href="/mylist" className={getLinkClass('/mylist')}>My List</Link>
+            <Link href="/trending" className={getLinkClass('/trending')}>Trending</Link>
           </div>
 
           {/* KANAN: SEARCH + PROFILE */}
-          <div className="flex items-center gap-4 flex-1 justify-end max-w-md ml-auto">
+          <div className="flex items-center gap-2 md:gap-4 flex-1 justify-end ml-auto">
             
-            {/* --- SEARCH BAR DESKTOP (Hidden on Mobile) --- */}
-            <div ref={searchRef} className="w-full relative hidden sm:block group">
+            {/* SEARCH BAR DESKTOP */}
+            <div ref={searchRef} className="w-full relative hidden sm:block group max-w-[200px] md:max-w-md">
               <form onSubmit={handleSearch}>
                 <input 
                   type="text" 
@@ -126,8 +124,6 @@ export default function Navbar() {
                   onChange={(e) => setKeyword(e.target.value)}
                   onFocus={() => keyword.length >= 3 && setShowSuggestions(true)}
                 />
-                
-                {/* Loading / Icon */}
                 <div className="absolute right-3 top-2 text-gray-400">
                    {isSearching ? (
                      <svg className="animate-spin h-5 w-5 text-red-500" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -139,7 +135,6 @@ export default function Navbar() {
                 </div>
               </form>
 
-              {/* Suggestions Desktop */}
               {showSuggestions && suggestions.length > 0 && (
                 <div className="absolute top-full mt-2 w-full bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
                   <div className="py-2">
@@ -162,18 +157,16 @@ export default function Navbar() {
               )}
             </div>
             
-            {/* --- TOMBOL SEARCH MOBILE (Sekarang Berfungsi!) --- */}
+            {/* TOMBOL SEARCH MOBILE */}
             <button 
-              className="sm:hidden text-white hover:text-red-500 transition"
-              onClick={() => setShowMobileSearch(!showMobileSearch)} // <--- INI FUNGSI TOGGLE NYA
+              className="sm:hidden text-white hover:text-red-500 transition p-1"
+              onClick={() => setShowMobileSearch(!showMobileSearch)} 
             >
               {showMobileSearch ? (
-                // Ikon Silang (X) kalau lagi buka search
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                // Ikon Kaca Pembesar kalau lagi nutup
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                 </svg>
@@ -182,7 +175,7 @@ export default function Navbar() {
 
             {/* PROFILE AVATAR */}
             <div className="relative group cursor-pointer z-50">
-              <div className="w-9 h-9 rounded-full bg-red-600 flex items-center justify-center text-white font-bold shadow-lg overflow-hidden border border-white/20 hover:scale-105 transition">
+              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-red-600 flex items-center justify-center text-white font-bold shadow-lg overflow-hidden border border-white/20 hover:scale-105 transition">
                 <span>R</span> 
               </div>
               <div className="absolute right-0 mt-2 w-48 bg-black/90 backdrop-blur-md rounded-md shadow-xl py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 invisible group-hover:visible border border-gray-800">
@@ -197,7 +190,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* --- MOBILE SEARCH BAR EXPAND (Muncul di Bawah Navbar) --- */}
+        {/* MOBILE SEARCH BAR EXPAND */}
         {showMobileSearch && (
           <div className="sm:hidden px-2 pb-4 pt-0 animate-in slide-in-from-top-2 duration-200">
             <form onSubmit={handleSearch} className="relative">
@@ -216,7 +209,6 @@ export default function Navbar() {
               )}
             </form>
             
-            {/* Live Suggestion Mobile */}
             {suggestions.length > 0 && keyword.length >= 3 && (
                <div className="mt-2 bg-gray-900 rounded-lg border border-gray-700 overflow-hidden shadow-xl">
                  {suggestions.map((drama) => (
@@ -226,7 +218,7 @@ export default function Navbar() {
                       onClick={() => setShowMobileSearch(false)}
                     >
                       <div className="px-4 py-3 border-b border-gray-800 hover:bg-gray-800 flex items-center gap-3">
-                         <img src={drama.cover} className="w-8 h-12 object-cover rounded bg-gray-800"/>
+                         <img src={drama.cover} className="w-8 h-12 object-cover rounded bg-gray-800" alt="" />
                          <span className="text-sm font-bold text-gray-200 line-clamp-1">{drama.bookName}</span>
                       </div>
                     </Link>

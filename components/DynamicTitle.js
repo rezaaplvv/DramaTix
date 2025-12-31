@@ -11,7 +11,7 @@ export default function DynamicTitle() {
     const handleVisibilityChange = () => {
       if (document.hidden) {
         // Kalau user pindah tab, ganti judulnya
-        document.title = "Jangan pergi dong... 😭";
+        document.title = "Jangan pergi dong...";
       } else {
         // Kalau user balik lagi, kembalikan judul asli
         document.title = originalTitle;
