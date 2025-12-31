@@ -75,7 +75,7 @@ export default function Footer() {
       </div>
 
       <div className="text-center text-gray-600 text-xs border-t border-gray-900 pt-8">
-        &copy; {new Date().getFullYear()} DramaTix. All rights reserved. • Dibuat dengan 🔥 oleh Reza
+        &copy; {new Date().getFullYear()} DramaTix. All rights reserved.
       </div>
     </footer>
   );
