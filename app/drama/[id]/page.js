@@ -1,14 +1,15 @@
 import Link from 'next/link';
-import HistorySaver from '@/components/HistorySaver'; // Pastikan import ini ada
+import BookmarkBtn from '@/components/BookmarkBtn'; // ✅ IMPORT BUTTON DISINI
 
 export default async function DramaDetail({ params, searchParams }) {
+  // Await params dan searchParams sesuai aturan Next.js terbaru
   const { id } = await params;
-  
-  // 1. TERIMA DATA TITIPAN DARI URL (Judul, Cover, DAN SINOPSIS)
   const query = await searchParams;
+
+  // 1. TERIMA DATA DARI URL
   const urlTitle = query?.title;
   const urlCover = query?.cover;
-  const urlSynopsis = query?.synopsis; // <--- INI BARU: Terima sinopsis
+  const urlSynopsis = query?.synopsis;
 
   // 2. FETCH DATA CHAPTER
   let chapters = [];
@@ -24,7 +25,6 @@ export default async function DramaDetail({ params, searchParams }) {
   const dramaInfo = {
     bookName: urlTitle ? decodeURIComponent(urlTitle) : "Drama Tanpa Judul",
     cover: urlCover ? decodeURIComponent(urlCover) : "https://via.placeholder.com/300x450",
-    // Prioritas: Pakai sinopsis dari URL. Kalau gak ada, baru pakai teks default.
     introduction: urlSynopsis ? decodeURIComponent(urlSynopsis) : "Sinopsis belum tersedia untuk drama ini.",
   };
 
@@ -45,29 +45,45 @@ export default async function DramaDetail({ params, searchParams }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-80 relative z-10">
         <div className="flex flex-col md:flex-row gap-8">
           
-          {/* POSTER KIRI */}
+          {/* KOLOM KIRI: POSTER & TOMBOL */}
           <div className="flex-shrink-0 w-48 md:w-72 mx-auto md:mx-0">
+            {/* Poster */}
             <div className="rounded-lg shadow-2xl border-4 border-gray-800 overflow-hidden bg-black aspect-[2/3]">
                <img 
-                  src={dramaInfo.cover} 
-                  alt={dramaInfo.bookName} 
-                  className="w-full h-full object-cover"
-                />
+                 src={dramaInfo.cover} 
+                 alt={dramaInfo.bookName} 
+                 className="w-full h-full object-cover"
+               />
             </div>
             
-            {/* Tombol Nonton */}
-            {chapters.length > 0 && (
-              // Kita bawa data sinopsis juga ke halaman nonton, biar lengkap
-              <Link href={`/watch/${id}/0?title=${encodeURIComponent(dramaInfo.bookName)}&cover=${encodeURIComponent(dramaInfo.cover)}`}>
-                <button className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition shadow-lg flex justify-center items-center gap-2">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                  Mulai Nonton
-                </button>
-              </Link>
-            )}
+            {/* AREA TOMBOL AKSI */}
+            <div className="mt-4 space-y-3">
+                {/* 1. Tombol Mulai Nonton */}
+                {chapters.length > 0 && (
+                  <Link href={`/watch/${id}/0?title=${encodeURIComponent(dramaInfo.bookName)}&cover=${encodeURIComponent(dramaInfo.cover)}`}>
+                    <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition shadow-lg flex justify-center items-center gap-2">
+                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                      Mulai Nonton
+                    </button>
+                  </Link>
+                )}
+
+                {/* 2. Tombol Bookmark (My List) - ✅ FITUR BARU */}
+                {/* Kita bungkus div biar tombolnya full width menyesuaikan poster */}
+                <div className="flex justify-center w-full">
+                    <BookmarkBtn 
+                        drama={{
+                            bookId: id,
+                            bookName: dramaInfo.bookName,
+                            cover: dramaInfo.cover,
+                            chapterCount: chapters.length
+                        }} 
+                    />
+                </div>
+            </div>
           </div>
 
-          {/* DETAIL KANAN */}
+          {/* KOLOM KANAN: DETAIL INFO */}
           <div className="flex-1 text-center md:text-left pt-4">
             <h1 className="text-3xl md:text-5xl font-black mb-4 drop-shadow-md leading-tight">
               {dramaInfo.bookName}
@@ -83,7 +99,7 @@ export default async function DramaDetail({ params, searchParams }) {
             </div>
 
             <p className="text-gray-400 leading-relaxed mb-8 max-w-3xl">
-              {dramaInfo.introduction} {/* Sekarang harusnya muncul teksnya */}
+              {dramaInfo.introduction}
             </p>
 
             {/* DAFTAR EPISODE */}
@@ -93,7 +109,6 @@ export default async function DramaDetail({ params, searchParams }) {
                 {chapters.map((chapter, index) => (
                   <Link 
                     key={chapter.chapterId || index} 
-                    // Bawa data ke player
                     href={`/watch/${id}/${index}?title=${encodeURIComponent(dramaInfo.bookName)}&cover=${encodeURIComponent(dramaInfo.cover)}`}
                   >
                     <div className="bg-gray-700 hover:bg-red-600 rounded-lg p-3 text-center cursor-pointer transition border border-transparent hover:border-red-400">
