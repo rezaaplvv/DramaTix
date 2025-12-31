@@ -104,7 +104,7 @@ export default function Home() {
               {popular.map((drama) => (
                 <Link 
                   key={drama.bookId} 
-                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}`}
+                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
                   className="snap-start shrink-0 w-[160px]"
                 >
                   <div className="group relative aspect-[2/3] rounded-lg overflow-hidden bg-gray-800 hover:ring-2 hover:ring-red-500 transition">
@@ -131,7 +131,7 @@ export default function Home() {
               {recommendations.slice(0, 10).map((drama) => (
                 <Link 
                   key={drama.bookId} 
-                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}`}
+                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
                 >
                   <div className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-800 cursor-pointer">
                     <img src={drama.cover} alt={drama.bookName} className="w-full h-full object-cover transition group-hover:opacity-80" loading="lazy" />
@@ -160,7 +160,7 @@ export default function Home() {
               {newReleases.map((drama) => (
                 <Link 
                   key={drama.bookId} 
-                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}`}
+                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
                 >
                   <div className="group cursor-pointer relative">
                     <div className="relative overflow-hidden rounded-xl shadow-lg aspect-[2/3] bg-gray-800">

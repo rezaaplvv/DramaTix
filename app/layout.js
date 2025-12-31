@@ -23,10 +23,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="id">
-      <body>
-        <DynamicTitle /> {/* 👈 2. PASANG DI SINI (Paling Atas) */}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <DynamicTitle /> 
         <Navbar />
-        {children}
+        
+        {/* PERBAIKAN: Tambahkan pembungkus dengan padding-top agar konten tidak tertutup Navbar */}
+        {/* pt-16 (64px) biasanya pas untuk tinggi navbar standar */}
+        <main className="pt-16 md:pt-20">
+          {children}
+        </main>
+        
       </body>
     </html>
   );
