@@ -1,8 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// 1. Import komponen Navbar
+// 1. Import komponen pendukung
 import Navbar from "@/components/Navbar";
 import DynamicTitle from '@/components/DynamicTitle';
+import DonateBtn from "@/components/DonateBtn"; // 👈 Tambahkan ini
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,11 +28,13 @@ export default function RootLayout({ children }) {
         <DynamicTitle /> 
         <Navbar />
         
-        {/* PERBAIKAN: Tambahkan pembungkus dengan padding-top agar konten tidak tertutup Navbar */}
-        {/* pt-16 (64px) biasanya pas untuk tinggi navbar standar */}
+        {/* Konten utama dengan padding agar tidak tertutup navbar */}
         <main className="pt-16 md:pt-20">
           {children}
         </main>
+
+        {/* 2. Tombol Donasi Fixed di pojok kanan bawah */}
+        <DonateBtn />
         
       </body>
     </html>
