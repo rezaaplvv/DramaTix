@@ -30,7 +30,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 2. LOGIKA LIVE SEARCH (Fix URL + Debounce)
+  // 2. LOGIKA LIVE SEARCH
   useEffect(() => {
     if (keyword.trim().length < 3) {
       setSuggestions([]);
@@ -79,11 +79,10 @@ export default function Navbar() {
   };
 
   const getLinkClass = (path) => {
-    // Ukuran teks diperkecil di mobile (text-[12px]) agar muat, dan normal di desktop (md:text-sm)
     const baseClass = "px-2 md:px-3 py-2 rounded-md text-[12px] md:text-sm font-bold transition duration-300 whitespace-nowrap";
     return pathname === path 
-      ? `${baseClass} text-white` 
-      : `${baseClass} text-gray-300 hover:text-red-500`;
+      ? `${baseClass} text-white bg-white/10` 
+      : `${baseClass} text-gray-300 hover:text-red-500 hover:bg-white/5`;
   };
 
   return (
@@ -92,39 +91,41 @@ export default function Navbar() {
       ${scrolled || showMobileSearch ? 'bg-black/95 backdrop-blur-md shadow-lg' : 'bg-black/50 backdrop-blur-md'}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-2 md:gap-4">
+        <div className="flex items-center justify-between h-16 gap-4">
           
-          {/* LOGO */}
-          <div className="flex-shrink-0 cursor-pointer min-w-max">
-            <Link href="/">
+          {/* 1. KIRI: LOGO */}
+          <div className="flex-1 flex justify-start">
+            <Link href="/" className="min-w-max">
               <span className="text-xl md:text-2xl font-black text-red-600 tracking-tighter hover:scale-105 transition transform block">
                 DRAMA<span className="text-white">TIX</span>
               </span>
             </Link>
           </div>
 
-          {/* MENU UTAMA (Sekarang Muncul di HP & Desktop) */}
-          <div className="flex items-center space-x-1 md:space-x-6 overflow-x-auto no-scrollbar">
-            <Link href="/" className={getLinkClass('/')}>Home</Link>
-            <Link href="/mylist" className={getLinkClass('/mylist')}>My List</Link>
-            <Link href="/trending" className={getLinkClass('/trending')}>Trending</Link>
+          {/* 2. TENGAH: MENU UTAMA (Desktop & Mobile) */}
+          <div className="flex-[2] flex justify-center items-center">
+            <div className="flex items-center space-x-1 md:space-x-4 bg-white/5 p-1 rounded-full border border-white/10">
+              <Link href="/" className={getLinkClass('/')}>Home</Link>
+              <Link href="/mylist" className={getLinkClass('/mylist')}>My List</Link>
+              <Link href="/trending" className={getLinkClass('/trending')}>Trending</Link>
+            </div>
           </div>
 
-          {/* KANAN: SEARCH + PROFILE */}
-          <div className="flex items-center gap-2 md:gap-4 flex-1 justify-end ml-auto">
+          {/* 3. KANAN: SEARCH SAJA (Profil Dihapus) */}
+          <div className="flex-1 flex justify-end items-center">
             
-            {/* SEARCH BAR DESKTOP */}
-            <div ref={searchRef} className="w-full relative hidden sm:block group max-w-[200px] md:max-w-md">
+            {/* SEARCH DESKTOP */}
+            <div ref={searchRef} className="relative hidden sm:block w-full max-w-[240px]">
               <form onSubmit={handleSearch}>
                 <input 
                   type="text" 
-                  placeholder="Cari judul..." 
-                  className="w-full bg-gray-800/80 text-white px-4 py-2 pl-4 pr-10 rounded-full border border-gray-600 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition text-sm placeholder-gray-500"
+                  placeholder="Cari drama..." 
+                  className="w-full bg-gray-800/80 text-white px-4 py-1.5 pl-4 pr-10 rounded-full border border-gray-600 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition text-sm placeholder-gray-500"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                   onFocus={() => keyword.length >= 3 && setShowSuggestions(true)}
                 />
-                <div className="absolute right-3 top-2 text-gray-400">
+                <div className="absolute right-3 top-1.5 text-gray-400">
                    {isSearching ? (
                      <svg className="animate-spin h-5 w-5 text-red-500" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                    ) : (
@@ -135,8 +136,9 @@ export default function Navbar() {
                 </div>
               </form>
 
+              {/* Suggestions Dropdown */}
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full mt-2 w-full bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
+                <div className="absolute top-full mt-2 right-0 w-[300px] bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50">
                   <div className="py-2">
                     {suggestions.map((drama) => (
                       <Link 
@@ -145,10 +147,8 @@ export default function Navbar() {
                         onClick={() => setShowSuggestions(false)}
                       >
                         <div className="px-4 py-2 hover:bg-gray-800 flex gap-3 items-center cursor-pointer transition">
-                           <img src={drama.cover} alt={drama.bookName} className="w-8 h-12 object-cover rounded bg-gray-700" />
-                           <div className="flex-1 min-w-0">
-                             <p className="text-sm font-bold text-gray-200 truncate">{drama.bookName}</p>
-                           </div>
+                           <img src={drama.cover} alt={drama.bookName} className="w-8 h-11 object-cover rounded bg-gray-700" />
+                           <p className="text-sm font-bold text-gray-200 truncate">{drama.bookName}</p>
                         </div>
                       </Link>
                     ))}
@@ -159,7 +159,7 @@ export default function Navbar() {
             
             {/* TOMBOL SEARCH MOBILE */}
             <button 
-              className="sm:hidden text-white hover:text-red-500 transition p-1"
+              className="sm:hidden text-white hover:text-red-500 transition p-2 bg-white/5 rounded-full"
               onClick={() => setShowMobileSearch(!showMobileSearch)} 
             >
               {showMobileSearch ? (
@@ -173,56 +173,33 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* PROFILE AVATAR */}
-            <div className="relative group cursor-pointer z-50">
-              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-red-600 flex items-center justify-center text-white font-bold shadow-lg overflow-hidden border border-white/20 hover:scale-105 transition">
-                <img 
-      src="/ppp.gif" // Ubah nama file sesuai gambar di folder public kamu
-      alt="Profile"
-      className="w-full h-full object-cover"
-    />
-              </div>
-              <div className="absolute right-0 mt-2 w-48 bg-black/90 backdrop-blur-md rounded-md shadow-xl py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 invisible group-hover:visible border border-gray-800">
-                <div className="px-4 py-2 border-b border-gray-800">
-                  <p className="text-sm text-white font-bold">Halo!</p>
-                </div>
-                <Link href="/mylist" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"> History Nonton</Link>
-                <Link href="/trending" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"> Trending</Link>
-              </div>
-            </div>
-
           </div>
         </div>
 
         {/* MOBILE SEARCH BAR EXPAND */}
         {showMobileSearch && (
-          <div className="sm:hidden px-2 pb-4 pt-0 animate-in slide-in-from-top-2 duration-200">
+          <div className="sm:hidden px-2 pb-4 pt-2 animate-in slide-in-from-top-2 duration-200">
             <form onSubmit={handleSearch} className="relative">
               <input 
                 autoFocus
                 type="text" 
                 placeholder="Cari drama..." 
-                className="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-600 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                className="w-full bg-gray-800 text-white px-4 py-3 rounded-xl border border-gray-600 focus:border-red-500 outline-none shadow-inner"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
               />
-              {isSearching && (
-                 <div className="absolute right-3 top-3.5">
-                    <svg className="animate-spin h-5 w-5 text-red-500" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                 </div>
-              )}
             </form>
             
             {suggestions.length > 0 && keyword.length >= 3 && (
-               <div className="mt-2 bg-gray-900 rounded-lg border border-gray-700 overflow-hidden shadow-xl">
+               <div className="mt-2 bg-gray-900 rounded-xl border border-gray-700 overflow-hidden shadow-2xl">
                  {suggestions.map((drama) => (
                     <Link 
                       key={drama.bookId}
-                      href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}`}
+                      href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
                       onClick={() => setShowMobileSearch(false)}
                     >
                       <div className="px-4 py-3 border-b border-gray-800 hover:bg-gray-800 flex items-center gap-3">
-                         <img src={drama.cover} className="w-8 h-12 object-cover rounded bg-gray-800" alt="" />
+                         <img src={drama.cover} className="w-8 h-11 object-cover rounded bg-gray-800" alt="" />
                          <span className="text-sm font-bold text-gray-200 line-clamp-1">{drama.bookName}</span>
                       </div>
                     </Link>
