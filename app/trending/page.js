@@ -2,12 +2,29 @@
 import Link from 'next/link';
 
 export default async function TrendingPage() {
-  // Fetch data dari endpoint Rank (Populer)
   let dramas = [];
+
   try {
-    const res = await fetch('https://restxdb.onrender.com/api/rank/1?lang=in&pagesize=50', { cache: 'no-store' });
-    const result = await res.json();
-    dramas = result?.data?.list || [];
+    // 1. FETCH DATA DARI API SANSEKAI (Kategori Terpopuler)
+    const res = await fetch(
+      'https://api.sansekai.my.id/api/dramabox/dubindo?classify=terpopuler&page=1', 
+      { cache: 'no-store' }
+    );
+    
+    // API Sansekai mengembalikan array langsung
+    const json = await res.json();
+    const rawData = Array.isArray(json) ? json : (json?.data || []);
+
+    // 2. MAPPING DATA (PENTING AGAR GAMBAR MUNCUL)
+    dramas = rawData.map(item => ({
+      bookId: item.bookId,
+      bookName: item.bookName || item.title,
+      // FIX UTAMA: Ambil coverWap jika ada
+      cover: item.coverWap || item.cover || "https://via.placeholder.com/300x450",
+      chapterCount: item.chapterCount || 0,
+      playCount: item.playCount || "HOT" // Fallback jika tidak ada data views
+    }));
+
   } catch (error) {
     console.error("Gagal ambil data trending:", error);
   }
@@ -18,7 +35,7 @@ export default async function TrendingPage() {
       {/* Header Halaman */}
       <div className="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row items-end gap-4 border-b border-gray-800 pb-6">
         <h1 className="text-4xl font-black flex items-center gap-3 text-red-600">
-          <span className="text-5xl"></span> TOP 10
+          <span className="text-5xl">🔥</span> TOP 10
         </h1>
         <p className="text-gray-400 pb-2 text-lg">Drama paling banyak ditonton minggu ini</p>
       </div>
@@ -61,7 +78,7 @@ export default async function TrendingPage() {
                 <div className="flex items-center gap-2 mt-1">
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
                   <span className="text-xs text-gray-400 font-mono">
-                    {drama.playCount ? drama.playCount.toLocaleString() : 'Popular'} Views
+                    {typeof drama.playCount === 'number' ? drama.playCount.toLocaleString() : drama.playCount} Views
                   </span>
                 </div>
               </div>

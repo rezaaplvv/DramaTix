@@ -1,33 +1,55 @@
 import Link from 'next/link';
-import BookmarkBtn from '@/components/BookmarkBtn'; // ✅ IMPORT BUTTON DISINI
+import BookmarkBtn from '@/components/BookmarkBtn'; 
 import ShareBtn from '@/components/ShareBtn';
 
 export default async function DramaDetail({ params, searchParams }) {
-  // Await params dan searchParams sesuai aturan Next.js terbaru
+  // Await params dan searchParams (Next.js 15)
   const { id } = await params;
   const query = await searchParams;
 
-  // 1. TERIMA DATA DARI URL
-  const urlTitle = query?.title;
-  const urlCover = query?.cover;
-  const urlSynopsis = query?.synopsis;
-
-  // 2. FETCH DATA CHAPTER
-  let chapters = [];
-  try {
-    const chaptersRes = await fetch(`https://restxdb.onrender.com/api/chapters/${id}?lang=in`, { cache: 'no-store' });
-    const chaptersResult = await chaptersRes.json();
-    chapters = chaptersResult?.data?.chapterList || [];
-  } catch (error) {
-    console.error("Gagal ambil episode:", error);
-  }
-
-  // 3. SUSUN INFO DRAMA
-  const dramaInfo = {
-    bookName: urlTitle ? decodeURIComponent(urlTitle) : "Drama Tanpa Judul",
-    cover: urlCover ? decodeURIComponent(urlCover) : "https://via.placeholder.com/300x450",
-    introduction: urlSynopsis ? decodeURIComponent(urlSynopsis) : "Sinopsis belum tersedia untuk drama ini.",
+  // Data Default (Fallback dari URL jika API lambat)
+  let dramaInfo = {
+    bookId: id,
+    bookName: query?.title ? decodeURIComponent(query.title) : "Memuat Judul...",
+    cover: query?.cover ? decodeURIComponent(query.cover) : "https://via.placeholder.com/300x450",
+    introduction: query?.synopsis ? decodeURIComponent(query.synopsis) : "Memuat sinopsis...",
   };
+
+  let chapters = [];
+
+  try {
+    // 1. FETCH DATA DARI SANSEKAI API (Parallel Request biar cepat)
+    const [detailRes, episodeRes] = await Promise.all([
+      fetch(`https://api.sansekai.my.id/api/dramabox/detail?bookId=${id}`, { cache: 'no-store' }),
+      fetch(`https://api.sansekai.my.id/api/dramabox/allepisode?bookId=${id}`, { cache: 'no-store' })
+    ]);
+
+    const detailJson = await detailRes.json();
+    const episodeJson = await episodeRes.json();
+
+    // 2. OLAH DATA DETAIL
+    // Sansekai kadang mengembalikan object langsung atau dibungkus 'data'
+    const detailData = detailJson?.data || detailJson;
+    
+    // UPDATE dramaInfo dengan data asli dari API
+    if (detailData) {
+        dramaInfo = {
+            bookId: id,
+            bookName: detailData.bookName || detailData.title || dramaInfo.bookName,
+            // FIX UTAMA: Gunakan coverWap (API baru) jika ada
+            cover: detailData.coverWap || detailData.cover || dramaInfo.cover, 
+            introduction: detailData.introduction || "Sinopsis tidak tersedia untuk drama ini.",
+        };
+    }
+
+    // 3. OLAH DATA EPISODE
+    // API Episode mengembalikan Array langsung
+    const rawEpisodes = Array.isArray(episodeJson) ? episodeJson : (episodeJson?.data || []);
+    chapters = rawEpisodes;
+
+  } catch (error) {
+    console.error("Gagal ambil data drama:", error);
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pb-20">
@@ -69,10 +91,8 @@ export default async function DramaDetail({ params, searchParams }) {
                   </Link>
                 )}
 
-{/* 2. Baris Tombol Sekunder (My List & Share) */}
-                {/* KITA GANTI 'FLEX' JADI 'GRID' BIAR BAGI DUA RATA */}
+                {/* 2. Baris Tombol Sekunder (My List & Share) */}
                 <div className="grid grid-cols-2 gap-4 mt-4 w-full">
-                    
                     {/* Tombol Kiri (Tersimpan) */}
                     <div className="w-full">
                         <BookmarkBtn 
@@ -92,7 +112,6 @@ export default async function DramaDetail({ params, searchParams }) {
                             text={`Drama seru nih: ${dramaInfo.bookName}. Nonton yuk!`} 
                         />
                     </div>
-
                 </div>
             </div>
           </div>
@@ -119,18 +138,22 @@ export default async function DramaDetail({ params, searchParams }) {
             {/* DAFTAR EPISODE */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-white/5 backdrop-blur-sm">
               <h3 className="text-xl font-bold mb-4">Daftar Episode</h3>
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
-                {chapters.map((chapter, index) => (
-                  <Link 
-                    key={chapter.chapterId || index} 
-                    href={`/watch/${id}/${index}?title=${encodeURIComponent(dramaInfo.bookName)}&cover=${encodeURIComponent(dramaInfo.cover)}`}
-                  >
-                    <div className="bg-gray-700 hover:bg-red-600 rounded-lg p-3 text-center cursor-pointer transition border border-transparent hover:border-red-400">
-                      <span className="text-sm font-bold text-gray-300">{index + 1}</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              {chapters.length > 0 ? (
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+                    {chapters.map((chapter, index) => (
+                      <Link 
+                        key={chapter.chapterID || index} 
+                        href={`/watch/${id}/${index}?title=${encodeURIComponent(dramaInfo.bookName)}&cover=${encodeURIComponent(dramaInfo.cover)}`}
+                      >
+                        <div className="bg-gray-700 hover:bg-red-600 rounded-lg p-3 text-center cursor-pointer transition border border-transparent hover:border-red-400">
+                          <span className="text-sm font-bold text-gray-300">{index + 1}</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+              ) : (
+                  <p className="text-gray-500 italic">Belum ada episode yang tersedia.</p>
+              )}
             </div>
 
           </div>

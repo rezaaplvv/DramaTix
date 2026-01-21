@@ -8,23 +8,32 @@ export default async function SearchPage({ params }) {
   // Decode biar spasi terbaca (misal "Cinta%20Suci" jadi "Cinta Suci")
   const decodedQuery = decodeURIComponent(query);
 
-  // 2. FETCH DATA DARI API
-  // API Wajib: /api/search/{KATA_KUNCI}/{HALAMAN}
-  // Kita set halaman = 1
   let dramas = [];
   
   try {
+    // 2. FETCH DATA DARI SANSEKAI API
     const res = await fetch(
-      `https://restxdb.onrender.com/api/search/${query}/1?lang=in`, 
+      `https://api.sansekai.my.id/api/dramabox/search?query=${query}`, 
       { cache: 'no-store' }
     );
-    const result = await res.json();
     
-    // Cek di terminal VS Code untuk debug
-    console.log(`Mencari: ${decodedQuery}`, result);
+    // API Search Sansekai mengembalikan array langsung
+    const json = await res.json();
+    const rawData = Array.isArray(json) ? json : (json?.data || []);
 
-    // Ambil list drama dari result.data.list
-    dramas = result?.data?.list || [];
+    // 3. MAPPING DATA (PENTING)
+    // Agar variabel 'cover', 'bookName' sesuai dengan UI kodingan mas
+    dramas = rawData.map(item => ({
+      bookId: item.bookId,
+      bookName: item.bookName || item.title,
+      // Cek semua kemungkinan nama variabel gambar dari API
+      cover: item.cover || item.coverWap || item.bookCover || "https://via.placeholder.com/300x450", 
+      chapterCount: item.chapterCount || 0,
+      introduction: item.introduction || ""
+    }));
+
+    // Cek di terminal VS Code untuk debug
+    console.log(`Mencari: ${decodedQuery}, Ditemukan: ${dramas.length}`);
     
   } catch (error) {
     console.error("Error search:", error);
@@ -48,9 +57,9 @@ export default async function SearchPage({ params }) {
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {dramas.map((drama) => (
             <Link 
-  key={drama.bookId} 
-  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}`}
->
+              key={drama.bookId} 
+              href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction)}`}
+            >
               <div className="group cursor-pointer relative">
                 
                 {/* Poster Image */}
@@ -77,12 +86,12 @@ export default async function SearchPage({ params }) {
       ) : (
         // Tampilan Kalau Kosong
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="text-6xl mb-4"></div>
+          <div className="text-6xl mb-4">🔍</div>
           <h2 className="text-xl font-bold text-gray-300">
             Tidak ada drama yang ditemukan
           </h2>
           <p className="text-gray-500 mt-2">
-            Coba cari "CEO", "Cinta", atau "Dendam"
+            Coba cari kata kunci lain seperti "CEO", "Cinta", atau "Dendam"
           </p>
         </div>
       )}

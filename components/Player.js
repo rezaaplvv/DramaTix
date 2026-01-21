@@ -1,4 +1,3 @@
-// components/Player.js
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -6,31 +5,24 @@ import Artplayer from "artplayer";
 import Hls from "hls.js";
 
 export default function Player({ option, style, getInstance, ...rest }) {
-  const artRef = useRef();      // Referensi ke elemen DIV
-  const playerRef = useRef(null); // Referensi ke Instance Player (Penjaga)
+  const artRef = useRef(null);
+  const playerInstanceRef = useRef(null); // Ref untuk menyimpan instance Artplayer
 
+  // 1. Efek untuk Inisialisasi dan Hancurkan Player
   useEffect(() => {
-    // 1. CEK PENJAGA: Kalau player sudah ada, jangan bikin lagi!
-    if (playerRef.current) {
-      return;
-    }
-
-    // 2. BERSIHKAN WADAH: Pastikan div kosong sebelum diisi player
-    if (artRef.current) {
-        artRef.current.innerHTML = "";
-    }
-
-    // 3. INIT PLAYER BARU
-    const art = new Artplayer({
+    // Pengecekan ini mencegah inisialisasi ulang di React StrictMode atau HMR.
+    // Player hanya dibuat jika instance-nya belum ada.
+    if (!playerInstanceRef.current) {
+      const art = new Artplayer({
       ...option,
       container: artRef.current,
-      // Settingan default yang mantap
+      // Settingan Default
       volume: 0.5,
       isLive: false,
       muted: false,
       autoplay: false,
       pip: true,
-      autoSize: false, // Kita atur size via CSS container
+      autoSize: false,
       autoMini: true,
       screenshot: true,
       setting: true,
@@ -61,22 +53,44 @@ export default function Player({ option, style, getInstance, ...rest }) {
         },
       },
     });
-
-    // Simpan player ke penjaga
-    playerRef.current = art;
-
-    if (getInstance && typeof getInstance === "function") {
-      getInstance(art);
+      
+      // Simpan instance ke dalam ref
+      playerInstanceRef.current = art;
+      
+      if (getInstance && typeof getInstance === "function") {
+        getInstance(art);
+      }
     }
 
-    // 4. CLEANUP: Hancurkan player saat pindah halaman
+    // Fungsi cleanup: Dipanggil saat komponen di-unmount.
     return () => {
-      if (playerRef.current && playerRef.current.destroy) {
-        playerRef.current.destroy(false);
-        playerRef.current = null; // Reset penjaga
+      if (playerInstanceRef.current && playerInstanceRef.current.destroy) {
+        playerInstanceRef.current.destroy(false);
+        // Penting: Set ref ke null setelah dihancurkan agar bisa dibuat ulang jika perlu.
+        playerInstanceRef.current = null;
       }
     };
-  }, []); // Dependency array kosong = jalan sekali saat mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Dependency kosong memastikan ini hanya berjalan saat mount dan unmount.
+
+
+  // 2. Efek untuk menangani pembaruan (misalnya, ganti episode)
+  useEffect(() => {
+    const player = playerInstanceRef.current;
+
+    // Cek apakah instance player ada dan URL disediakan
+    if (player && option.url) {
+      // Jika URL berubah, ganti sumber video
+      if (player.url !== option.url) {
+        console.log("Mengganti video ke:", option.url);
+        player.switchUrl(option.url, option.title);
+      }
+
+      // Selalu update properti lain yang mungkin berubah antar episode
+      player.poster = option.poster;
+      player.title = option.title;
+    }
+  }, [option.url, option.poster, option.title]); // Efek ini berjalan saat properti ini berubah
 
   return <div ref={artRef} style={style} {...rest}></div>;
 }

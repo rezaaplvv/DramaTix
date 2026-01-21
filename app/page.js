@@ -20,34 +20,49 @@ export default function Home() {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        // Helper Fetcher
+        // --- HELPER FETCHER BARU (FIX MAPPING DATA) ---
         const getData = async (endpoint) => {
           try {
-            const separator = endpoint.includes('?') ? '&' : '?';
-            // Fetch langsung dari browser
-            const res = await fetch(`https://restxdb.onrender.com/api/${endpoint}${separator}lang=in`);
+            // Fetch ke API Sansekai
+            const res = await fetch(`https://api.sansekai.my.id/api/dramabox/${endpoint}`);
             
             if (!res.ok) throw new Error('Fetch error');
             const json = await res.json();
-            return json?.data?.list || [];
+            
+            // Cek apakah response berupa Array langsung atau Object data
+            const rawData = Array.isArray(json) ? json : (json?.data || []);
+
+            // MAPPING DATA SUPER LENGKAP
+            return rawData.map(item => ({
+              bookId: item.bookId,
+              bookName: item.bookName || item.title, // Judul Drama
+              
+              // FIX UTAMA: Cek 'coverWap' (W besar), 'bookCover' (Random), dan 'cover' (Search)
+              cover: item.coverWap || item.bookCover || item.cover || "", 
+              
+              chapterCount: item.chapterCount || 0, // Jumlah Episode
+              introduction: item.introduction || "" // Sinopsis
+            }));
+
           } catch (err) {
             console.error(`Gagal ambil ${endpoint}`, err);
             return [];
           }
         };
 
-        // Ambil data paralel
+        // --- AMBIL DATA DARI ENDPOINT SANSEKAI YANG MAS KIRIM ---
+        //
         const [resNew, resRec, resPop] = await Promise.all([
-          getData('new/1?pagesize=20'),
-          getData('foryou/1'),
-          getData('rank/1')
+          getData('latest'),                              // Baru Diupdate (Screenshot 1749)
+          getData('foryou'),                              // Rekomendasi/Hero (Screenshot 1748)
+          getData('dubindo?classify=terpopuler&page=1')   // Sedang Hype (Screenshot 1746)
         ]);
 
         setNewReleases(resNew);
         setRecommendations(resRec);
         setPopular(resPop);
         
-        // LOGIC HERO: Ambil 5 data teratas untuk slider
+        // LOGIC HERO: Ambil 5 data teratas dari 'For You' untuk Slider
         const slides = resRec.slice(0, 5);
         if (slides.length > 0) {
            setHeroData(slides);
@@ -71,7 +86,7 @@ export default function Home() {
       <main className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-400 text-sm animate-pulse">Memuat Drama...</p>
+          <p className="text-gray-400 text-sm animate-pulse">Memuat Drama Dramatix...</p>
         </div>
       </main>
     );
@@ -80,11 +95,10 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-900 text-white pb-20">
       
-      {/* 1. HERO SECTION (Kirim array data) */}
+      {/* 1. HERO SECTION */}
       {heroData.length > 0 && <Hero dramas={heroData} />}
       
       {/* 2. CONTINUE WATCHING */}
-      {/* PERBAIKAN: Wrapper dibersihkan, margin diatur di dalam komponen langsung agar responsif */}
       <div className="relative z-20"> 
           <ContinueWatching />
       </div>
@@ -93,7 +107,7 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
         
-        {/* POPULER */}
+        {/* POPULER / SEDANG HYPE */}
         {popular.length > 0 && (
           <section>
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
@@ -104,7 +118,7 @@ export default function Home() {
               {popular.map((drama) => (
                 <Link 
                   key={drama.bookId} 
-                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
+                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction)}`}
                   className="snap-start shrink-0 w-[160px]"
                 >
                   <div className="group relative aspect-[2/3] rounded-lg overflow-hidden bg-gray-800 hover:ring-2 hover:ring-red-500 transition">
@@ -118,7 +132,7 @@ export default function Home() {
           </section>
         )}
 
-        {/* REKOMENDASI */}
+        {/* REKOMENDASI SPESIAL */}
         {recommendations.length > 0 && (
           <section id="rekomendasi" className="scroll-mt-24">
             <div className="pt-4 mb-4">
@@ -131,7 +145,7 @@ export default function Home() {
               {recommendations.slice(0, 10).map((drama) => (
                 <Link 
                   key={drama.bookId} 
-                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
+                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction)}`}
                 >
                   <div className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-800 cursor-pointer">
                     <img src={drama.cover} alt={drama.bookName} className="w-full h-full object-cover transition group-hover:opacity-80" loading="lazy" />
@@ -147,7 +161,7 @@ export default function Home() {
           </section>
         )}
 
-        {/* TERBARU */}
+        {/* BARU DIUPDATE */}
         {newReleases.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-4">
@@ -160,7 +174,7 @@ export default function Home() {
               {newReleases.map((drama) => (
                 <Link 
                   key={drama.bookId} 
-                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction || "")}`}
+                  href={`/drama/${drama.bookId}?title=${encodeURIComponent(drama.bookName)}&cover=${encodeURIComponent(drama.cover)}&synopsis=${encodeURIComponent(drama.introduction)}`}
                 >
                   <div className="group cursor-pointer relative">
                     <div className="relative overflow-hidden rounded-xl shadow-lg aspect-[2/3] bg-gray-800">
