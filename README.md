@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center"> <h1> DRAMATIX</h1> <p><strong>Next-Generation Cinema Experience Platform</strong></p>
 
-## Getting Started
+<p> <img src="https://img.shields.io/badge/Next.js-15-black?logo=next.js" alt="Next.js"/> <img src="https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC?logo=tailwind-css" alt="Tailwind CSS"/> <img src="https://img.shields.io/badge/Status-In_Development-orange" alt="Status"/> <img src="https://img.shields.io/badge/License-MIT-green" alt="License"/> </p>
 
-First, run the development server:
+Interface Demo
+<p align="center"> <img src="demodramadekstop1.png" width="45%" /> <img src="demodramadekstop2.png" width="45%" /> </p> <p align="center"> <img src="demodramahp1.jpeg" width="22%" /> <img src="demodramahp2.jpeg" width="22%" /> </p> </div>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<b>Overview</b>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Dramatix is a modern web application dedicated to drama and movie streaming enthusiasts. The main focus of this project is on access speed, a clean interface, and user comfort in exploring cinematic content. Built with the latest Next.js 15 technology, this project ensures optimal performance and is SEO-friendly.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<b>Key Features</b>
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+Modern Video Player: An elegant video player interface with intuitive controls.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Seamless Navigation: Move between pages without reloading thanks to Next.js App Router technology.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Responsive Display: Layouts that automatically adjust for mobile, tablet, and desktop devices.
 
-## Deploy on Vercel
+VIP Membership System: Subscription features for VIP packages (Lite, Gold, Silver) for exclusive content access and an ad-free experience.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Dark UI Design (Dark Mode): A premium dark theme designed to reduce eye fatigue during long-duration viewing.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<b>Technologies Used</b>
+
+
+Framework: Next.js 15 (App Router)
+
+Styling: Tailwind CSS
+
+Environment: Node.js Optimized
+
+Tools: Git & GitHub
+
+<b>Installation & Local Setup</b>
+
+
+To run this project on your local machine, follow these steps:
+
+Clone Repository: git clone https://github.com/username/dramatix.git
+
+Install Dependencies: npm install
+
+Run Development Server: npm run dev
+
+Build for Production: npm run build
+
+<b>Contribution</b>
+
+
+I am very open to anyone who wants to contribute. If you find a bug or have an idea for a new feature, please create an issue or submit a pull request in this repository.
+
+<div align="center"> <p>© 2026 Dramatix - Rezaaplvv</p> </div>
